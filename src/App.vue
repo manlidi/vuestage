@@ -1,26 +1,33 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <appheader />
+  <router-view />
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import appheader from '@/components/MyHeader.vue'
+import firebase from 'firebase/compat/app';
+import {onBeforeMount} from 'vue';
+import router from './router';
+import {useRoute} from 'vue-router';
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    appheader,
+  },
+  setup(){
+    const routes = useRoute();
+    onBeforeMount(() => {
+      firebase.auth().onAuthStateChanged((user) =>{
+        if(!user){
+          router.push('/')
+        }else if(routes.path == "/connexion" || routes.path == "/inscription"){
+          router.push('/profil')
+          router.push('/profil/search')
+        }
+      });
+    });
   }
 }
 </script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
